@@ -1,0 +1,110 @@
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  name: hello
+#  namespace: default
+#spec:
+#  containers:
+#    - name: hello
+#      image: localhost:32000/hello:latest
+#      command: ['sh', '-c', './main/main']
+#      livenessProbe:
+#        httpGet:
+#          path: /
+#          port: 8000
+#        initialDelaySeconds: 5
+#        timeoutSeconds: 30
+#  restartPolicy: Always
+#---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-service
+  namespace: default
+spec:
+  selector:
+    app: hello
+#    Exposes port to outside world
+  type: NodePort
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hello-v1
+  name: hello-v1
+#  annotations:
+#    sidecar.istio.io/inject: "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hello
+        version: v1
+    spec:
+#      Time until new image is deployed from repository
+#      terminationGracePeriodSeconds: 3
+      containers:
+        - name: hello
+          image: localhost:32000/hello:v1
+          command: ['sh', '-c', './main/main' ]
+          imagePullPolicy: "Always"
+      restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hello-v2
+  name: hello-v2
+#  annotations:
+#    sidecar.istio.io/inject: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hello
+        version: v2
+    spec:
+#      Time until new image is deployed from repository
+#      terminationGracePeriodSeconds: 3
+      containers:
+        - name: hello
+          image: localhost:32000/hello:v2
+          command: ['sh', '-c', './main/main' ]
+          imagePullPolicy: "Always"
+      restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello-ingress
+spec:
+  rules:
+    - host: hello.127.0.0.1.xip.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: hello-service
+              servicePort: 3000
