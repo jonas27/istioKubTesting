@@ -96,15 +96,79 @@ spec:
 status: {}
 ---
 apiVersion: extensions/v1beta1
-kind: Ingress
+kind: Deployment
 metadata:
-  name: hello-ingress
+  creationTimestamp: null
+  labels:
+    app: hello-v3
+  name: hello-v3
+#  annotations:
+#    sidecar.istio.io/inject: "true"
 spec:
-  rules:
-    - host: hello.127.0.0.1.xip.io
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: hello-service
-              servicePort: 3000
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hello
+        version: v3
+    spec:
+#      Time until new image is deployed from repository
+#      terminationGracePeriodSeconds: 3
+      containers:
+        - name: hello
+          image: localhost:32000/hello:v3
+          command: ['sh', '-c', './main/main' ]
+          imagePullPolicy: "Always"
+      restartPolicy: Always
+status: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hello-v4
+  name: hello-v4
+#  annotations:
+#    sidecar.istio.io/inject: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hello
+        version: v4
+    spec:
+#      Time until new image is deployed from repository
+#      terminationGracePeriodSeconds: 3
+      containers:
+        - name: hello
+          image: localhost:32000/hello:v4
+          command: ['sh', '-c', './main/main' ]
+          imagePullPolicy: "Always"
+      restartPolicy: Always
+status: {}
+#---
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+#  name: hello-ingress
+#spec:
+#  rules:
+#    - host: hello.127.0.0.1.xip.io
+#      http:
+#        paths:
+#          - path: /
+#            backend:
+#              serviceName: hello-service
+#              servicePort: 3000

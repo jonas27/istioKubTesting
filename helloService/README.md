@@ -8,10 +8,13 @@ Before starting the work you have to enable the istio-injection by executing the
 ```
 CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -a -installsuffix cgo -o main .
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main .
+
 sudo docker build . -t hello
 sudo docker run -p 3000:3000 hello
+
 microk8s.docker build . -t hello
 microk8s.docker build -t localhost:32000/hello:latest .
+
 This step is not needed:
 (microk8s.docker tag hello localhost:32000/hello)
 microk8s.docker push localhost:32000/hello:latest
@@ -26,10 +29,22 @@ microk8s.enable dns dashboard ingress storage istio registry metrics-server prom
 microk8s.kubectl create -f manifest.yaml 
 microk8s.kubectl delete -f manifest.yaml 
 
+# list all 
+microk8s.kubectl get all --all-namespaces
 
 microk8s.kubectl describe pods
 
 microk8s.kubectl label namespace default istio-injection=enabled
+
+microk8s.kubectl get destinationrules -o yaml
+microk8s.kubectl create -f routetrule.yaml 
+
+microk8s.kubectl -n istio-system port-forward istio-ingressgateway-89c5bd64f-89zq6 2000
+
+# Forward ingress
+microk8s.kubectl get pod -n istio-system -l istio=ingressgateway -o name
+microk8s.kubectl -n istio-system port-forward istio-ingressgateway-89c5bd64f-89zq6 2000
+
 
 ```
 
@@ -40,6 +55,8 @@ Always ask yourself "Do the containers care on which server they are running?". 
 If the answer is no, then they should not be in a Pot together.
 
 - **Manifest**: should be treated as source code with comments for explanation. <br />
+
+- **Namespaces**: Are Virtual Clusters inside one physical cluster. [more info here](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
 
 - **HealthChecks**: By default, Kubernetes checks if the main process is running, and (re)starts it if necessary. <br >
 However, it is more sensible to implement a health check incorporating deadlocks etc. <br />
@@ -52,9 +69,10 @@ If the script returns a non-zero code the container is not healthy.
 - **Volumes**: Are defined for a Pod and then on a container basis.<br />
 Only containers which need a volume should have access and volumes can be shared across containers. 
 
+- **DNS**: address inside a namespace is just normal service name, outside namespace, the namespace needs to be referenced as well [here](https://kubernetes.io/docs/concepts/services-networking/service/#dns)
 
-- **Versions**: Versions are important for Istio to route traffic and are a requirement when running on Kubernetes [ref online](https://istio.io/docs/setup/kubernetes/spec-requirements/). <br />
-
+- **Istio Requirements**: Istio requirements can be found [here](https://istio.io/docs/setup/kubernetes/spec-requirements/).
+    - Versions are important for Istio to route traffic and are a requirement when running on Kubernetes. <br />
 
 ## Kinds
 - **Deployment**: Meant to replace *Replica Controller* as it provides more functions. <br />
