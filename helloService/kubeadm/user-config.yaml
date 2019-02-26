@@ -1,0 +1,11 @@
+{
+  {
+    "apiVersion": "abac.authorization.kubernetes.io/v1beta1",
+    "kind": "Policy",
+    "spec": {
+      "user": "joe",
+      "namespace": "kube-system",
+      "resource": "pods",
+      "readonly": true
+    }
+  }
