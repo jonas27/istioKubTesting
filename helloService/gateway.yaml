@@ -1,21 +1,18 @@
+
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: hello-gateway
 spec:
   selector:
-    istio: ingressgateway
+    istio: ingressgateway # use istio default controller
   servers:
     - port:
-        number: 2000
+        number: 80
         name: http
         protocol: HTTP
       hosts:
-        - "*" # allow traffic for all hosts
-#      tls: #TLS settings
-#        mode: SIMPLE
-#        serverCertificate: /tmp/tls.crt
-#        privateKey: /tmp/tls.key
+        - "*"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -25,16 +22,14 @@ spec:
   hosts:
     - "*"
   gateways:
-    - hello-gateway # <---- bind to gateway
+    - hello-gateway
   http:
     - match:
         - uri:
-            prefix: /
-        - uri:
-            prefix: /hello
+            exact: /hello
       route:
         - destination:
+            host: hello-service
             port:
               number: 3000
-            host: "*"
-            subset: v4
+

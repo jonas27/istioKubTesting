@@ -15,7 +15,7 @@
 #        initialDelaySeconds: 5
 #        timeoutSeconds: 30
 #  restartPolicy: Always
-#---
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -25,7 +25,7 @@ spec:
   selector:
     app: hello
 #    Exposes port to outside world
-  type: NodePort
+#  type: NodePort
   ports:
     - name: http
       port: 3000
@@ -57,7 +57,7 @@ spec:
 #      terminationGracePeriodSeconds: 3
       containers:
         - name: hello
-          image: localhost:32000/hello:v1
+          image: jonas27/hello:v1
           command: ['sh', '-c', './main/main' ]
           imagePullPolicy: "Always"
       restartPolicy: Always

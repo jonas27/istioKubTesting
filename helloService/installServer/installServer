@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# prepare system
+sudo apt install snapd -y
+sudo apt install curl -y
+sudo apt install docker.io -y 
+sudo systemctl enable docker
+
+printf "\n\nInstall kubeadm and swapoff\n\n"
+sudo apt-get update && sudo apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+sudo swapoff -a
+
+printf "\n\nConfigure kubernetes\n\n"
+sudo hostnamectl set-hostname kubernetes-master
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+# Outputs kube join url with token
+# run on single node
+sudo kubectl taint nodes --all node-role.kubernetes.io/master-
+
+printf "\n\n install components \n\n"
+# install Flannel for networking
+sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+# install k8s dashboard 
+sudo kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
+
+
+printf "\n\nlet user (joe) use kubectl without sudo\n\n"
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown joe $HOME/.kube/config
+
+
+# Create sample user
+#kubectl create -f https://raw.githubusercontent.com/jonas27/istioKubTesting/master/helloService/sampleUser
+
+
+printf "\n\n Download and install Istio \n\n" 
+curl -L https://git.io/getLatestIstio | sh -
+cd $(ls |grep istio-1.)
+export PATH=$PWD/bin:$PATH
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+#without TLS
+kubectl apply -f install/kubernetes/istio-demo.yaml
+# with mutual TLS
+#kubectl apply -f install/kubernetes/istio-demo-auth.yaml
+# enable auto injection for namespace=hello-service
+kubectl label namespace hello-service istio-injection=enabled
+# kubectl create -n <namespace> -f <your-app-spec>.yaml
+
+
+# Create docker repo
+sudo usermod -aG docker $USER
+sudo docker run -d -p 5000:5000 --name registry registry:2
+

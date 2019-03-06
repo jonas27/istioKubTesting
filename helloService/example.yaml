@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{
+      "annotations":{},"labels":{
+      "app":"istio-ingressgateway","chart":"gateways-1.0.1","heritage":"Tiller","istio":"ingressgateway","release":"istio"}
+      ,"name":"istio-ingressgateway","namespace":"istio-system"},
+      "spec":{"ports":[{"name":"http2","nodePort":31380,"port":80,"targetPort":80},{"name":"https","nodePort":31390,"port":443},{"name":"tcp","nodePort":31400,"port":31400},{"name":"tcp-pilot-grpc-tls","port":15011,"targetPort":15011},{"name":"tcp-citadel-grpc-tls","port":8060,"targetPort":8060},{"name":"tcp-dns-tls","port":853,"targetPort":853},{"name":"http2-prometheus","port":15030,"targetPort":15030},{"name":"http2-grafana","port":15031,"targetPort":15031}],"selector":{"app":"istio-ingressgateway","istio":"ingressgateway"},"type":"LoadBalancer"}}
+  creationTimestamp: 2018-09-06T02:43:34Z
+  labels:
+    app: istio-ingressgateway
+    chart: gateways-1.0.1
+    heritage: Tiller
+    istio: ingressgateway
+    release: istio
+  name: istio-ingressgateway
+  namespace: istio-system
+  resourceVersion: "12960680"
+  selfLink: /api/v1/namespaces/istio-system/services/istio-ingressgateway
+  uid: a6455551-b17e-11e8-893c-0a872c53b2c0
+spec:
+       clusterIP: 100.64.235.167
+       externalTrafficPolicy: Cluster
+       ports:
+         - name: http2
+           nodePort: 31380
+           port: 80
+           protocol: TCP
+           targetPort: 80
+         - name: https
+           nodePort: 31390
+           port: 443
+           protocol: TCP
+           targetPort: 443
+         - name: tcp
+           nodePort: 31400
+           port: 31400
+           protocol: TCP
+           targetPort: 31400
+         - name: tcp-pilot-grpc-tls
+           nodePort: 30052
+           port: 15011
+           protocol: TCP
+           targetPort: 15011
+         - name: tcp-citadel-grpc-tls
+           nodePort: 30614
+           port: 8060
+           protocol: TCP
+           targetPort: 8060
+         - name: tcp-dns-tls
+           nodePort: 30085
+           port: 853
+           protocol: TCP
+           targetPort: 853
+         - name: http2-prometheus
+           nodePort: 30518
+           port: 15030
+           protocol: TCP
+           targetPort: 15030
+         - name: http2-grafana
+           nodePort: 31358
+           port: 15031
+           protocol: TCP
+           targetPort: 15031
+  **_- name: http-tomcat
+         nodePort: 30541
+         port: 8083
+         protocol: TCP
+         targetPort: 8083_**
+         selector:
+           app: istio-ingressgateway
+           istio: ingressgateway
+         sessionAffinity: None
+         type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+      - hostname: <elb_endpoint>
