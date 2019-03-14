@@ -46,3 +46,6 @@ kubectl describe pods hello
 ```
 
 normal bookinfo install does not install promotheus dependencies. no its running
+
+systest
+test.

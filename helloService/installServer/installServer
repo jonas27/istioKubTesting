@@ -2,9 +2,10 @@
 
 # prepare system
 sudo apt update && \
-sudo apt install -y helm snapd curl docker.io
+sudo apt install -y snapd curl docker.io && \
 sudo systemctl enable docker && \
-sudo apt update
+sudo apt update && \
+sudo snap install helm --classic
 
 printf "\n\nInstall kubeadm and swapoff\n\n" && \
 sudo apt-get update && \
@@ -23,7 +24,6 @@ sudo hostnamectl set-hostname kubernetes-master && \
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 && \
 printf "\n\n Outputs kube join url with token and next run with run on single node \n" && \
 sudo kubectl taint nodes --all node-role.kubernetes.io/master-
-
 printf "\n\n install components (if pods pending there is probably routing problem --> install flannel \n\n"
 printf "\n\n install Flannel for networking\n"
 sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -45,6 +45,13 @@ printf "\n\n Download and install Istio \n\n"  && \
 curl -L https://git.io/getLatestIstio | sh - && \
 cd $(ls |grep istio-1.) && \
 export PATH=$PWD/bin:$PATH && \
+
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system \
+--set gateways.istio-ingressgateway.type=NodePort \
+--set gateways.istio-egressgateway.type=NodePort > installIstio && \
+kubectl create namespace istio-system && \
+kubectl apply -f installIstio
+
 kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml && \
 printf "\n\n without TLS\n"  && \
 kubectl apply -f install/kubernetes/istio-demo.yaml && \
