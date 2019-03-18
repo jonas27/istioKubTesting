@@ -19,11 +19,12 @@ sudo apt-mark hold kubelet kubeadm kubectl && \
 sudo swapoff -a && \
 printf "\n\n Swap is off! \n"
 
-printf "\n\nConfigure kubernetes\n\n"
+printf "\n\nConfigure kubernetes\n\n" && \
 sudo hostnamectl set-hostname kubernetes-master && \
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 && \
 printf "\n\n Outputs kube join url with token and next run with run on single node \n" && \
 sudo kubectl taint nodes --all node-role.kubernetes.io/master-
+
 printf "\n\n install components (if pods pending there is probably routing problem --> install flannel \n\n"
 printf "\n\n install Flannel for networking\n"
 sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
