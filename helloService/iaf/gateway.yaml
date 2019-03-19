@@ -1,7 +1,8 @@
+
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: hello-gateway
+  name: iafoosball-gateway
 spec:
   selector:
     istio: ingressgateway # use istio default controller
@@ -16,25 +17,19 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: hello
+  name: iafoosball
 spec:
   hosts:
     - "*"
   gateways:
-    - hello-gateway
+    - iafoosball-gateway
   http:
     - match:
         - uri:
-            exact: /
-        - uri:
-            exact: /hello
-        - uri:
-            exact: /logout
-        - uri:
-            prefix: /api/v2/products
+            exact: /matches
       route:
         - destination:
-            host: hello
-#            subset: v1
+            host: livematches
             port:
-              number: 3000
+              number: 8013
+

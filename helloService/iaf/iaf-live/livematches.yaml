@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: livematches
+  namespace: iafoosball
+spec:
+  selector:
+    app: livematches
+  #    Exposes port to outside world
+  #  type: NodePort
+  ports:
+    - name: http
+      port: 8013
+      targetPort: 8013
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: livematches-v2
+  name: livematches-v2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: livematches
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: livematches
+        version: v2
+    spec:
+      containers:
+        - name: livematches
+          image: iafoosball/livematches:v2
+          command: ['sh', '-c', './livematches' ]
+          imagePullPolicy: "Always"
+      restartPolicy: Always
+status: {}
+---
