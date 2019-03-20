@@ -1,0 +1,31 @@
+---
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: forwarding-receive-tls
+spec:
+  targets:
+    - name: forwarding
+  peers:
+    - mtls: {}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: forwarding-istio-mtls
+spec:
+  host: forwarding.bookinfo.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: forwarding
+spec:
+  host: forwarding
+  subsets:
+    - name: v1
+      labels:
+        version: v1
