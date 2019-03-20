@@ -38,3 +38,13 @@ spec:
 #            subset: v1
             port:
               number: 3000
+    - match:
+        - uri:
+            exact: /forward
+        - uri:
+            exact: /info
+      route:
+        - destination:
+            host: forwarding
+            port:
+              number: 3001

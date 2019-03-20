@@ -74,6 +74,7 @@ helm template install/kubernetes/helm/istio --name istio --namespace istio-syste
 --set gateways.istio-ingressgateway.type=NodePort \
 --set gateways.istio-egressgateway.type=NodePort > installIstio && \
 kubectl create namespace istio-system && \
+kubectl apply -f install/kubernetes/istio-demo.yaml && \
 kubectl apply -f installIstio && \
 kubectl label namespace default istio-injection=enabled
 

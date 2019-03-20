@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forward-service
+  namespace: default
+spec:
+  selector:
+    app: forward
+  #    Exposes port to outside world
+  type: NodePort
+  ports:
+    - name: http
+      port: 3001
+      targetPort: 3001
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: forward-v1
+  name: forward-v1
+#  annotations:
+#    sidecar.istio.io/inject: "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: forward
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: forward
+        version: v1
+    spec:
+      #      Time until new image is deployed from repository
+      #      terminationGracePeriodSeconds: 3
+      containers:
+        - name: forward
+          image: 5.189.132.161:5000/forward:v1
+          command: ['sh', '-c', './main/main' ]
+          imagePullPolicy: "Always"
+      restartPolicy: Always
+status: {}
+---
