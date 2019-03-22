@@ -21,26 +21,23 @@ sudo swapoff -a && \
 printf "\n\n Swap is off! \n"
 
 printf "\n\nConfigure kubernetes\n\n" && \
-
-
-printf "\n\nConfigure kubernetes\n\n" && \
+sudo hostnamectl set-hostname ubuntu1-kubernetes-master && \
 sudo hostnamectl set-hostname kubernetes-master && \
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 && \
 printf "\n\n Outputs kube join url with token and next run with run on single node \n" && \
 sudo kubectl taint nodes --all node-role.kubernetes.io/master-
-
-printf "\n\n install components (if pods pending there is probably routing problem --> install flannel \n\n"
-printf "\n\n install Flannel for networking\n"
-sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-printf "\n\n install k8s dashboard\n"
-sudo kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
-
 
 printf "\n\nlet user (joe) use kubectl without sudo\n\n" && \
 mkdir -p $HOME/.kube && \
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \
 sudo chown $USER $HOME/.kube/config
+
+
+printf "\n\n install components (if pods pending there is probably routing problem --> install flannel \n\n"
+printf "\n\n install Flannel for networking\n"
+sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+printf "\n\n install k8s dashboard\n"
+sudo kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
 
 printf "\n\n Outputs kube join url with token and next run with run on single node \n" && \
 sudo kubectl taint nodes --all node-role.kubernetes.io/master-
@@ -70,6 +67,9 @@ kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 # with security
 #kubectl apply -f install/kubernetes/helm/istio/charts/certmanager/templates/crds.yaml --> this makes problems
 
+export GETALL="kubectl get all --all-namespaces"
+
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml && \
 helm template install/kubernetes/helm/istio --name istio --namespace istio-system \
 --set gateways.istio-ingressgateway.type=NodePort \
 --set gateways.istio-egressgateway.type=NodePort > installIstio && \
@@ -82,6 +82,13 @@ kubectl label namespace default istio-injection=enabled
 
 
 
+
+
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml && \
+printf "\n\n enable auto injection for namespace=hello-service \n" && \
+kubectl label namespace default istio-injection=enabled
+
+sudo kubectl taint nodes --all node-role.kubernetes.io/master-
 
 
 kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml && \
