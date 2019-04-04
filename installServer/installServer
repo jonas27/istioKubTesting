@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # prepare system
+export USERNAME=$(read -p 'Username: ' uval && echo -n $uval) && \
 sudo apt update && \
 sudo apt install -y snapd curl docker.io && \
 sudo systemctl enable docker && \
 sudo apt-get install -y openssh-server && \
-sudo apt update && \
 sudo snap install helm --classic
 
-printf "\n\nInstall kubeadm and swapoff\n\n" && \
+printf "*** Install kubeadm and swapoff ***" && \
 sudo apt-get update && \
 sudo apt-get install -y apt-transport-https && \
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
@@ -26,7 +26,7 @@ printf "\n\nConfigure kubernetes\n\n" && \
 printf "\n\nConfigure kubernetes\n\n" && \
 sudo hostnamectl set-hostname kubernetes-master && \
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 && \
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 >> joinCluster && \
 printf "\n\n Outputs kube join url with token and next run with run on single node \n" && \
 sudo kubectl taint nodes --all node-role.kubernetes.io/master-
 
