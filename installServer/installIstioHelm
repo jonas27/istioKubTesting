@@ -1,0 +1,40 @@
+#!/bin/bash
+printf "*** Download Istio ***"  && \
+curl -L https://git.io/getLatestIstio | sh - && \
+cd $(ls |grep istio-1.) && \
+export PATH=$PWD/bin:$PATH && \
+kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+
+printf "*** Install Istio via Helm ***"
+kubectl create namespace istio-system && \
+kubectl apply -f install/kubernetes/helm/helm-service-account.yaml && \
+helm init --service-account tiller && \
+kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/master/deploy/manifests/00-crds.yaml && \
+kubectl label namespace istio-system certmanager.k8s.io/disable-validation="true" && \
+helm install --name release-cert-manager stable/cert-manager
+
+printf "*** Create Kiali secret ***"
+KIALI_USERNAME=$(echo "systest" | base64) && \
+KIALI_PASSPHRASE=$(echo "admin" | base64) && \
+cat <<EOF> | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kiali
+  namespace: $NAMESPACE
+  labels:
+    app: kiali
+type: Opaque
+data:
+  username: $KIALI_USERNAME
+  passphrase: $KIALI_PASSPHRASE
+EOF
+
+printf "*** Install Kiali ***" && \
+helm template --set kiali.enabled=true install/kubernetes/helm/istio --name istio --namespace istio-system > $HOME/istio.yaml && \
+kubectl apply -f $HOME/istio.yaml
+
+
+
+
+

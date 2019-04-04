@@ -1,0 +1,2 @@
+Get IPs
+kubectl get nodes -o wide
