@@ -3,7 +3,8 @@ printf "*** Download Istio ***"  && \
 curl -L https://git.io/getLatestIstio | sh - && \
 cd $(ls |grep istio-1.) && \
 export PATH=$PWD/bin:$PATH && \
-kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
+for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done && \
+kubectl apply -f install/kubernetes/istio-demo.yaml
 
 printf "*** Install Istio via Helm ***"
 kubectl create namespace istio-system && \

@@ -2,6 +2,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: hello-gateway
+#  namespace: hello
 spec:
   selector:
     istio: ingressgateway # use istio default controller
@@ -14,9 +15,21 @@ spec:
         - "*"
 ---
 apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  host: hello.hello.svc.cluster.local
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_CONN
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: hello
+  namespace: hello
 spec:
   hosts:
     - "*"
@@ -25,26 +38,15 @@ spec:
   http:
     - match:
         - uri:
-            exact: /
-        - uri:
-            exact: /hello
-        - uri:
-            exact: /logout
-        - uri:
-            prefix: /api/v2/products
+            prefix: /hello
+#        - uri:
+#            exact: /
+#        - uri:
+#            prefix: /
       route:
         - destination:
-            host: hello
+            host: hello.hello.svc.cluster.local
+#            host: sdf
 #            subset: v1
             port:
               number: 3000
-    - match:
-        - uri:
-            exact: /forward
-        - uri:
-            exact: /info
-      route:
-        - destination:
-            host: forwarding
-            port:
-              number: 3001

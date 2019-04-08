@@ -1,12 +1,30 @@
-sudo kubeadm reset
+#!/bin/bash
+
+sudo kubeadm reset --force
+sudo swapoff -a
 
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
 mkdir -p $HOME/.kube && \
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \
+sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config && \
 sudo chown $USER $HOME/.kube/config
 
-sudo swapoff -a && \
 sudo kubectl taint nodes --all node-role.kubernetes.io/master- && \
 export ALL="kubectl get all --all-namespaces"
+
+
+
+sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+sudo kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended/kubernetes-dashboard.yaml
+
+
+printf "*** Download Istio ***"  && \
+cd $(ls |grep istio-1.) && \
+export PATH=$PWD/bin:$PATH && \
+for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done && \
+kubectl apply -f install/kubernetes/istio-demo.yaml
+
+
+
+
 

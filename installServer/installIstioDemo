@@ -58,10 +58,8 @@ INstall Completed!!!!!!!!\
 
 
 
-printf "\n\n Install Istio \n\n"  && \
-curl -L https://git.io/getLatestIstio | sh - && \
-cd $(ls |grep istio-1.) && \
-export PATH=$PWD/bin:$PATH && \
+
+
 kubectl apply -f install/kubernetes/helm/istio/templates/crds.yaml
 
 # with security

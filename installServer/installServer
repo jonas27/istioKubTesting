@@ -44,3 +44,4 @@ sudo kubectl taint nodes --all node-role.kubernetes.io/master-
 # Create sample user
 #kubectl create -f https://raw.githubusercontent.com/jonas27/istioKubTesting/master/helloService/sampleUser
 sed -i -e '$a\export ALL="kubectl get all --all-namespaces"' $HOME/.profile
+
