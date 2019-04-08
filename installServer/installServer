@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # prepare system
+export USERNAME=$(read -p 'Username: ' uval && echo -n $uval) && \
 sudo apt update && \
 sudo apt install -y snapd curl docker.io && \
 sudo systemctl enable docker && \
@@ -9,6 +10,7 @@ sudo apt update && \
 sudo snap install helm --classic
 
 printf "***Install kubeadm and swapoff***" && \
+printf "*** Install kubeadm and swapoff ***" && \
 sudo apt-get update && \
 sudo apt-get install -y apt-transport-https && \
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
@@ -29,8 +31,7 @@ sudo kubectl taint nodes --all node-role.kubernetes.io/master-
 printf "*** Use kubectl without sudo (user here is joe ***" && \
 mkdir -p $HOME/.kube && \
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \
-sudo chown joe $HOME/.kube/config
-
+sudo chown $USER $HOME/.kube/config
 
 printf "*** nstall components (if pods pending there is probably routing problem --> install flannel ***"
 printf "*** install Flannel for networking***"

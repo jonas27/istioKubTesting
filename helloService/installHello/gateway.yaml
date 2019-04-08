@@ -50,3 +50,27 @@ spec:
 #            subset: v1
             port:
               number: 3000
+
+    - match:
+        - uri:
+            exact: /forward
+        - uri:
+            exact: /info
+      route:
+        - destination:
+            host: forwarding
+            port:
+              number: 3001
+    - match:
+        - uri:
+            prefix: /matches
+        - uri:
+            prefix: /tables
+        - uri:
+            prefix: /users
+      route:
+        - destination:
+            host: livematches
+            port:
+              number: 8013
+            websocketUpgrade: true

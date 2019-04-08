@@ -6,26 +6,26 @@ Helm template creates NodePort use this command <br />
 ```
 helm template install/kubernetes/helm/istio --name istio --namespace istio-system \
 --set gateways.istio-ingressgateway.type=NodePort \
---set gateways.istio-egressgateway.type=NodePort > installIstio 
+--set gateways.istio-egressgateway.type=NodePort > installIstio
 
 --set sidecarInjectorWebhook.enabled=fals2 \     --> supposed to help for sidecar injection but no
 ```
 
 
-Foward <br /> 
-Prom 
+Foward <br />
+Prom
 ```
 kubectl -n istio-system port-forward --address 0.0.0.0 \
 $(kubectl -n istio-system get pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') \
 9090:9090 & > promForward
 ```
-Graf 
+Graf
 ```
 kubectl -n istio-system port-forward --address 0.0.0.0 \
 $(kubectl -n istio-system get pod -l app=grafana -o jsonpath='{.items[0].metadata.name}') \
 5000:3000 & > grafForward
 ```
-Jaeger 
+Jaeger
 ```
 kubectl -n istio-system port-forward --address 0.0.0.0 \
 $(kubectl -n istio-system get pod -l app=jaeger -o jsonpath='{.items[0].metadata.name}') \
@@ -42,7 +42,7 @@ $(kubectl -n istio-system get pod -l app=servicegraph -o jsonpath='{.items[0].me
 
 look for istio proxy and pod stuff
 ```
-kubectl describe pods hello 
+kubectl describe pods hello
 ```
 
 normal bookinfo install does not install promotheus dependencies. no its running
