@@ -1,0 +1,76 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: hello-gateway
+#  namespace: hello
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  host: hello.hello.svc.cluster.local
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_CONN
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello
+  namespace: hello
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - hello-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /hello
+#        - uri:
+#            exact: /
+#        - uri:
+#            prefix: /
+      route:
+        - destination:
+            host: hello.hello.svc.cluster.local
+#            host: sdf
+#            subset: v1
+            port:
+              number: 3000
+#
+#    - match:
+#        - uri:
+#            exact: /forward
+#        - uri:
+#            exact: /info
+#      route:
+#        - destination:
+#            host: forwarding
+#            port:
+#              number: 3001
+#    - match:
+#        - uri:
+#            prefix: /matches
+#        - uri:
+#            prefix: /tables
+#        - uri:
+#            prefix: /users
+#      route:
+#        - destination:
+#            host: livematches
+#            port:
+#              number: 8013
+#            websocketUpgrade: true
