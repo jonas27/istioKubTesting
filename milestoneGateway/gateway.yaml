@@ -1,0 +1,46 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: vps-gateway #only use one gateway. Multiple confuse Istio Ingress
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vps-vs
+  namespace: vps
+spec:
+  hosts:
+    - "proxy.localhost"
+  gateways:
+    - vps-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /proxy
+        - uri:
+            prefix: /proxy/
+      route:
+        - destination:
+            host: alternating-rabbit-proxy-service.vps.svc.cluster.local
+            #            subset: v1
+            port:
+              number: 8989
+#    - match:
+#        - uri:
+#            prefix: /
+#      route:
+#        - destination:
+#            host: alternating-rabbit-proxy-service.vps.svc.cluster.local
+#            #            subset: v1
+#            port:
+#              number: 8989

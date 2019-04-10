@@ -1,0 +1,7 @@
+
+
+kubectl label namespace vps istio-injection=disabled --overwrite
+
+kubectl delete pod -n vps
+
+kubectl edit service -n vps alternating-rabbit-proxy-service
