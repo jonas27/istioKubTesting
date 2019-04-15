@@ -1,0 +1,133 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: manager-route
+spec:
+  hosts:
+    - "*-manager-service.vps.svc.cluster.local"
+  gateways:
+    - vps-gateway
+  http:
+    - route:
+        - destination:
+            host: "*-manager-service.vps.svc.cluster.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: proxy-route
+spec:
+  hosts:
+    - "*-proxy-service.vps.svc.cluster.local"
+  gateways:
+    - vps-gateway
+  http:
+    - route:
+        - destination:
+            host: "*-proxy-service.vps.svc.cluster.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: monitor-route
+spec:
+  hosts:
+    - "*-monitor-service.vps.svc.cluster.local"
+  gateways:
+    - vps-gateway
+  http:
+    - route:
+        - destination:
+            host: "*-monitor-service.vps.svc.cluster.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: node-route
+spec:
+  hosts:
+    - "*:31829"
+  gateways:
+    - vps-gateway
+  http:
+#    - route:
+#        - destination:
+#            host: "*-node-service.vps.svc.cluster.local"
+    - match:
+        - uri:
+            prefix: /hello
+        - uri:
+            exact: /hello/hello
+        - uri:
+            exact: /hello/info
+      route:
+        - destination:
+            host: "*-node-service.vps.svc.cluster.local"
+            #            subset: v1
+            port:
+              number: 3000
+
+
+
+
+
+#
+#managerServiceName: "{{ .Release.Name }}-manager-service"
+#managerServicePortGRPC: 8080
+#managerServicePortTK: 8990
+#
+#
+#nodeServiceName: "{{ .Release.Name }}-node-service"
+#nodeServicePortTK: 8989
+#nodeContainerPortGRPC: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #    - match:
+    #        - uri:
+    #            prefix: /proxy
+    #        - uri:
+    #            exact: /proxy/
+    #      route:
+    #        - destination:
+    #            host: "*-proxy-service.vps.svc.cluster.local"
+    #            #            subset: v1
+    #            port:
+    #              number: 8989
+    #    - match:
+    #        - uri:
+    #            prefix: /proxy
+    #      route:
+    #        - destination:
+    #            host: "*-manager-service.vps.svc.cluster.local"
+    #            #            subset: v1
+    #            port:
+    #              number: 8989
+    #
+    #    - match:
+    #        - uri:
+    #            prefix: /proxy
+    #      route:
+    #        - destination:
+    #            host: "*-manager-service.vps.svc.cluster.local"
+    #            #            subset: v1
+    #            port:
+    #              number: 8080

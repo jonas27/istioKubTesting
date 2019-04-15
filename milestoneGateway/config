@@ -5,3 +5,22 @@ kubectl label namespace vps istio-injection=disabled --overwrite
 kubectl delete pod -n vps
 
 kubectl edit service -n vps alternating-rabbit-proxy-service
+
+
+
+kubectl create namespace vps && \
+kubectl label namespace vps istio-injection=enabled
+
+
+
+kubectl edit gateway vps-gateway
+
+kubectl edit virtualservice -n hello hello
+
+kubectl -n vps exec -it nihilist-tuatara-proxy-replicaset-4d2k7 -- /bin/bash
+
+
+
+kubectl  delete namespace vps
+
+~/Documents/VT02container_v12.2/Core/ScalableArchitecture/Helm/Charts/VPS.install
