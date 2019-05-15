@@ -4,13 +4,14 @@ metadata:
   name: manager-route
 spec:
   hosts:
-    - "*"
+    - "*-manager-service.vps.svc.cluster.local"
   gateways:
     - vps-gateway
   http:
     - route:
         - destination:
-            host: "*"
+            host: "*-manager-service.vps.svc.cluster.local"
+          websocketUpgrade: true
 #    - match:
 #      - port: 8080
 #      route:
@@ -42,6 +43,7 @@ spec:
             host: "*-proxy-service.vps.svc.cluster.local"
             port:
               number: 8989
+        websocketUpgrade: true
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -59,6 +61,7 @@ spec:
           host: "*-monitor-service.vps.svc.cluster.local"
           port:
             number: 8080
+      websocketUpgrade: true
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -76,4 +79,5 @@ spec:
             host: "*-node-service.vps.svc.cluster.local"
             port:
               number: 8989
+        websocketUpgrade: true
 
