@@ -3,13 +3,8 @@
 kubectl label namespace vps istio-injection=disabled --overwrite
 
 kubectl delete pod -n vps
-
 kubectl edit service -n vps alternating-rabbit-proxy-service
 
-
-
-kubectl create namespace vps && \
-kubectl label namespace vps istio-injection=enabled
 
 
 
@@ -21,6 +16,71 @@ kubectl -n vps exec -it nihilist-tuatara-proxy-replicaset-4d2k7 -- /bin/bash
 
 
 
-kubectl  delete namespace vps
+kubectl  delete namespace vps && \
+kubectl  delete namespace istio-system --grace-period=0 --force &
+
+
+kubectl create namespace istio-system
+
+kubectl create namespace vps && \
+kubectl label namespace vps istio-injection=enabled --overwrite
 
 ~/Documents/VT02container_v12.2/Core/ScalableArchitecture/Helm/Charts/VPS.install
+
+
+
+
+
+kubectl delete pods -n vps rude-blackbird-node-daemonset-2qfgr  --grace-period=0 --force
+
+
+
+
+kubectl cp -n vps $GOPATH/bin/grpcurl  estranged-jaguar-monitor-replicaset-7fpq5:/ -c estranged-jaguar-monitor-container
+kubectl exec -n vps -it estranged-jaguar-monitor-replicaset-7fpq5 /bin/bash -c estranged-jaguar-monitor-container
+/grpcurl -plaintext  10.244.2.186:8080 list
+$GOPATH/bin/grpcurl -plaintext  dkws-vt02-02:30129 list
+
+
+
+
+
+
+
+
+
+helm template ../../helm/istio-cni --name=istio-cni --namespace=istio-system --set excludeOutboundIPRanges=10.244.2.10/16 | kubectl apply -f -
+helm template ../../helm/istio-cni --name=istio-cni --namespace=istio-system --set excludeOutboundIPRanges=10.244.2.10/16 | kubectl delete -f -
+
+
+
+global.proxy.excludeIPRanges
+"10.244.2.10/16"
+nano install/kubernetes/istio-demo.yaml
+
+
+
+Install CNI
+helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \
+--set logLevel=info --set global.proxy.excludeIPRanges="10.244.2.10/16"  | kubectl apply -f -
+
+helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \
+--set logLevel=info --set traffic.sidecar.istio.io/excludeOutboundIPRanges="10.244.2.10/16"  | kubectl apply -f -
+
+
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system \
+ --set global.proxy.excludeIPRanges="10.244.0.0/16" > istio-install.yaml
+
+helm template install/kubernetes/helm/istio --name istio --namespace istio-system \
+  --set istio_cni.enabled=true
+
+enable CNI on Kubernets:
+https://istio.io/docs/setup/kubernetes/additional-setup/cni/
+https://stackoverflow.com/questions/49278317/adding-network-flag-network-plugin-cni-to-kubelet
+
+how to add outbound exceptions
+https://github.com/istio/istio/issues/9304
+
+
+kubectl -n istio-system get ep istio-sidecar-injector
+kubectl -n istio-system describe deployment istio-sidecar-injector

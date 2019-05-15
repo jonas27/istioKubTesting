@@ -1,19 +1,6 @@
 imageSuffix:
 projectID:
-platform: researchregistry:5000
+platform: jonas278
 
-managerServiceName: "{{ .Release.Name }}-manager-service"
-managerServicePortGRPC: 8080
-managerServicePortTK: 8990
-
-proxyServiceName: "{{ .Release.Name }}-proxy-service"
-proxyServicePortTK: 8989
-proxyServiceNodeportTK: 32320
-
-monitorServiceName: "{{ .Release.Name }}-monitor-service"
-monitorServicePort: 8080
-monitorServiceNodeport: 31122
-
-nodeServiceName: "{{ .Release.Name }}-node-service"
-nodeServicePortTK: 8989
-nodeContainerPortGRPC: 8080
+bashServiceName: "bash-service"
+bashTestPort: 3000

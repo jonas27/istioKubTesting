@@ -2,7 +2,7 @@
 # microk8s.docker build . -t hello
 # microk8s.kubectl expose deployment microbot --type=NodePort --port=80 --name=microbot-service
 
-FROM alpine
+FROM golang:latest
 EXPOSE 3000
 COPY . .
 CMD ["main/main"]

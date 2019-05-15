@@ -1,0 +1,15 @@
+#apiVersion: "networking.istio.io/v1alpha3"
+#kind: DestinationRule
+#metadata:
+#  name: bash-service
+#  namespace: {{ .Release.Namespace }}
+#spec:
+#  host: bash-service.{{ .Release.Namespace }}.svc.cluster.local"
+#  trafficPolicy:
+#    tls:
+#      mode: ISTIO_MUTUAL
+#    portLevelSettings: #Disable client TLS requirements for EPMD port and optionally amqps port
+#      - port:
+#          number: {{ .Values.bashTestPort }}
+#        tls:
+#          mode: DISABLE

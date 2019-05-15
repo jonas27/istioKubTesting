@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: bash-service
+  namespace: hs
+spec:
+  host: bash-service.hs.svc.cluster.local"
+location: MESH_INTERNAL
+ports:
+- name: http
+  protocol: TCP
+  number: {{ .Values.bashTestPort }}

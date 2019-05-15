@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-cd $HOME/headless/
-helm install . --namespace hs
+kubectl delete namespace hs --grace-period=0 --force

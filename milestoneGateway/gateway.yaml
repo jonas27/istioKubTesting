@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: vps-gateway #only use one gateway. Multiple confuse Istio Ingress
+  name: vps-gateway # only use one gateway. Multiple confuse Istio Ingress
 spec:
   selector:
     istio: ingressgateway # use istio default controller
